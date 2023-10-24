@@ -1,46 +1,51 @@
-from config import *  # Importamos el token
-import telebot  # Para manejar la API de Telegram
+from config import *  #importamos el token
+import telebot  #para manejar la API de Telegar
 import time
 import threading
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+#botones inline
+from telebot.types import InlineKeyboardMarkup  #ara crear botonera inline
+from telebot.types import InlineKeyboardButton   #para deifinir los botones inline
 import requests
 from bs4 import BeautifulSoup
 import pickle
 import os
-# Verifica si el directorio './busquedas/' existe, y si no, créalo.
-if not os.path.exists('./busquedas/'):
-    os.makedirs('./busquedas/')
 
-# Constantes
-N_RES_PAG = 5  # Número de resultados a mostrar en cada página
-MAX_ANCHO_ROW = 8  # Máximo de botones por fila (el límite de Telegram es 8)
-DIR = {"busquedas": "./busquedas/"}  # Directorio donde se guardan los archivos de las búsquedas
-
-# Verificamos si los directorios existen y los creamos si no
-for key in DIR:
+#Constantes
+N_RES_PAG = 5  #numero de resultados a mostrar en cada página
+MAX_ANCHO_ROW = 8  # maximo de botones por fila (limito de telegram es 8)
+DIR = {"busquedas" : "./busquedas/"}   #donde se guardan los archivos de las busquedas
+for key in DIR:   #creamos los directorio definidos
     try:
-        os.mkdir(DIR[key])
-    except FileExistsError:
+        os.mkdir(key)
+    except:
         pass
 
-# Instanciamos el bot de Telegram
+'''
+TELEGRAM_TOKEN = "6664804026:AAG8bALQDBODF5702AUWlUv8MSBXV2gn-So"
+MI_CHAT_ID = 2096120369  #este es mi chat_id con el bot
+GRUPO_STAFF = -1001677796993
+CANAL_ID1 = -1001780591507  #este es el canal_id de pruebas
+CANAL_ID = -1001909656171   #este es el canal_id
+CANAL_CHAT_ID = -1001800044087   #este es el canal_chat_id
+'''
+#instanciamos el bot de Telegram
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 
-# Para responder al comando /start
-@bot.message_handler(commands=["help", "start", "ayuda"])
+#para responder al comando /start
+@bot.message_handler(commands=["help","start","ayuda"])
 def enviar(message):
-    bot.reply_to(message, "Hola, ¿Cómo estás?")
+    #da la bianvenida al usuario
+    bot.reply_to(message, "Hola, ¿Como estas?")
     print(message.chat.id)
 
-
-
-
-
-# Responde al comando /botones
+###############################################################################
+#responde al comando /botones
 @bot.message_handler(commands=['botones'])
 def cmd_botones(message):
-    markup = InlineKeyboardMarkup(row_width=3)  # Número de botones en cada fila, 3 por defecto
-    a1 = InlineKeyboardButton("DIRECTORIO", url="https://t.me/YaichiAnimeDirectorio")
+    ##Muestra un menssaje con botones inline a continuacion del mensaje
+    
+    markup = InlineKeyboardMarkup(row_width = 3)   #numero de botones en cada fila, 3 por defecto
+    a1 = InlineKeyboardButton("CANAL PRICIPAL", url="https://t.me/YaichiAnimeDirectorio")
     b0 = InlineKeyboardButton("#", url="https://t.me/YaichiAnimeDirectorio/67")
     b1 = InlineKeyboardButton("A", url="https://t.me/YaichiAnimeDirectorio/68")
     b2 = InlineKeyboardButton("B", url="https://t.me/YaichiAnimeDirectorio/69")
@@ -72,36 +77,56 @@ def cmd_botones(message):
     markup.row(a1)
     markup.add(b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16,b17,b18,b19,b20,b21,b22,b23,b24,b25,b26)
     markup.row(c1)
-    bot.reply_to(message, "-----[BOTONERA YAICHI COMUNIDAD]-----\nLos animes están ordenados alfabeticamente segun su nombre en japones, estos son los animes que estan disponibles en nuestro catálogo", reply_markup=markup)
+    bot.send_message(message.chat.id, "-----[BOTONERA YAICHI COMUNIDAD]-----\nLos animes están ordenados alfabeticamente segun su nombre en japones, estos son los animes que estan disponibles en nuestro catálogo", reply_markup=markup)
+    #bot.send_message(GRUPO_STAFF, "-----[BOTONERA YAICHI COMUNIDAD]-----\nLos animes están ordenados alfabeticamente segun su nombre en japones, estos son los animes que estan disponibles en nuestro catálogo", reply_markup=markup)
     #bot.send_message(CANAL_ID, "-----[BOTONERA YAICHI COMUNIDAD]-----\nLos animes están ordenados alfabeticamente segun su nombre en japones, estos son los animes que estan disponibles en nuestro catálogo", reply_markup=markup)
-   
-# Responde al comando /buscar
+    
+
+
+#############################################################################
+@bot.message_handler(commands=['link'])
+#responde al comando link
+def cmd_link(message):
+    markup = InlineKeyboardMarkup(row_width = 3)   #numero de botones en cada fila, 3 por defecto
+    a1 = InlineKeyboardButton("Yaichi Canal Principal", url="https://t.me/YaichiAnimeDirectorio")
+    b0 = InlineKeyboardButton("Yaichi Emisión 720p HD", url="https://t.me/YaichiAnimeEmisionHD")
+    b1 = InlineKeyboardButton("Yaichi Emisión 720p ligero", url="https://t.me/Yaichi_Emisiones_720p")
+    b2 = InlineKeyboardButton("Yaichi Peliculas", url="https://t.me/YaichiAnimePeliculas")
+    b3 = InlineKeyboardButton("Yaichi Finalizados", url="https://t.me/YaichiAnimeFinalizados")
+    b4 = InlineKeyboardButton("Yaichi Fianlizados 720p", url="https://t.me/Yaichi_ABC123XYZ")
+    b5 = InlineKeyboardButton("Yaichi Finalizados 1080p", url="https://t.me/+hXDphJn22RRiNGZh")
+    markup.row(a1)
+    markup.add(b0,b1)
+    markup.add(b2,b3)
+    markup.add(b4,b5)
+    bot.send_message(message.chat.id, "Estos son los canales que estan disponibles en <b>Yaichi Anime</b>", reply_markup=markup, parse_mode="html")
+
+############################################################################
+###Responde al comando /buscar
 @bot.message_handler(commands=['buscar'])
 def cmd_buscar(message):
-    # Realiza una búsqueda en Google y devuelve una lista de resultados
-    texto_buscar = " ".join(message.text.split()[1:])
     
-    # Si no se han pasado parámetros
+    #realiza una buaqueda en google y devuelve una lista del resultado
+    texto_buscar = " ".join(message.text.split()[1:])
+    #si no se han pasado parametros
     if not texto_buscar:
         texto = 'Debes introducir una búsqueda.\n'
-        texto += 'Ejemplo:\n'
-        texto += f'<code>{message.text} Fate series</code>'
+        texto+='Ejemplo:\n'
+        texto+=f'<code>{message.text} Fate series</code>'
         bot.send_message(message.chat.id, texto, parse_mode="html")
-        return
-
-    # Si se ha indicado un texto de búsqueda
+        return 1
+    #si se ha indicado un texto de busqueda
     else:
         time.sleep(1)
         print(f'Buscando en Google: "{texto_buscar}"')
         url = f'https://www.google.com/search?q={texto_buscar.replace(" ","+")}&num=50'
-        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, Like Gecko) Chrome/90.0.4430.85 Safari/537.36 Edg/90.0.818.46"
+        user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKIt/537.36 (KHTML, Like Gecko) Chrome/90.0.4430.85 Safari/537.36 Edg/90.0.818.46"
         headers = {"user-agent": user_agent}
         res = requests.get(url, headers=headers, timeout=10)
-        
         if res.status_code != 200:
             print(f'Error al buscar: {res.status_code} {res.reason}')
-            bot.send_message(message.chat.id, "Se ha producido un error. Inténtelo más tarde")
-            return
+            bot.send_message(message.chat.id, "Se a producido un error. Inténtelo más tarde")
+            return 1
         else:
             soup = BeautifulSoup(res.text, "html.parser")
             elementos = soup.find_all("div", class_="g")
@@ -110,7 +135,7 @@ def cmd_buscar(message):
                 try:
                     titulo = elemento.find("h3").text
                     url = elemento.find("a").attrs.get("href")
-                    if not url.startswith("http"):
+                    if not url.startswith ("http"):
                         url = "https://google.com" + url
                     if [titulo, url] in lista:
                         continue
@@ -118,79 +143,87 @@ def cmd_buscar(message):
                 except:
                     continue
         mostrar_pagina(lista, message.chat.id)
-@bot.message_handler(func=lambda message: message.chat.type == 'group' or message.chat.type == 'supergroup')
-def buscar_en_grupo(message):
-    # Esta función se activa cuando se recibe el comando /buscar en un grupo
-    # Puedes personalizar el comportamiento para grupos aquí
-
-    bot.reply_to(message, "La búsqueda está disponible solo en chats personales.")
-
-# Resto del código...
-# ...
 
 def mostrar_pagina(lista, cid, pag=0, mid=None):
-    # Crea o edita un mensaje de la página
-    # Creamos la botonera
+    ##Crea o edita un mensaje de la pagina
+    # creamos la botonera
     markup = InlineKeyboardMarkup()
     b_anterior = InlineKeyboardButton("◀⬅", callback_data="anterior")
     b_cerrar = InlineKeyboardButton("❌", callback_data="cerrar")
     b_siguiente = InlineKeyboardButton("➡▶", callback_data="siguiente")
-    inicio = pag * N_RES_PAG  # Número resultados inicio de página en curso
-    fin = pag * N_RES_PAG + N_RES_PAG  # Número resultado fin de página en curso
+    inicio = pag*N_RES_PAG   #n° resultados inicio de pag en curso
+    fin = pag*N_RES_PAG+N_RES_PAG # n° resultado fin de pag en curso
     markup.row(b_anterior, b_cerrar, b_siguiente)
     mensaje = f'<i>Resultados {inicio+1}-{fin} de {len(lista)}</i>\n\n'
     n = 1
     for item in lista[inicio:fin]:
-        mensaje += f'[<b>{n}</b>] <a href="{item[1]}">{item[0]}</a>\n'
-        n += 1
+        mensaje+= f'[<b>{n}</b>] <a href="{item[1]}">{item[0]}</a>\n'
+        n+= 1
     if mid:
         bot.edit_message_text(mensaje, cid, mid, reply_markup=markup, parse_mode="html", disable_web_page_preview=True)
     else:
         res = bot.send_message(cid, mensaje, reply_markup=markup, parse_mode="html", disable_web_page_preview=True)
         mid = res.message_id
-        datos = {"pag": 0, "lista": lista}
+        datos = {"pag":0, "lista":lista}
         pickle.dump(datos, open(f'{DIR["busquedas"]}{cid}_{mid}', 'wb'))
-
-
-
-# Manejo de acciones de callback_data
+        
+############################################################################
+#para responder a mensajes normales con el mismo texto
 @bot.callback_query_handler(func=lambda x: True)
 def respuesta_botones_inline(call):
+    ##gestiona las acciones de callback_data
     cid = call.from_user.id
     mid = call.message.id
+
+    ##############
 
     if call.data == "cerrar":
         bot.delete_message(cid, mid)
         return
     datos = pickle.load(open(f'{DIR["busquedas"]}{cid}_{mid}', 'rb'))
     if call.data == "anterior":
-        if datos["pag"] == 0:
-            bot.answer_callback_query(call.id, "Ya estás en la primera página")
+        if datos["pag"]==0:
+            bot.answer_callback_query(call.id, "Ya estas en la primera página")
         else:
-            datos["pag"] -= 1  # Retrocedemos una página
+            datos["pag"]-=1  ##retrocedemos una página
             pickle.dump(datos, open(f'{DIR["busquedas"]}{cid}_{mid}', 'wb'))
             mostrar_pagina(datos["lista"], cid, datos["pag"], mid)
         return
     elif call.data == "siguiente":
         if datos["pag"] * N_RES_PAG + N_RES_PAG >= len(datos["lista"]):
-            bot.answer_callback_query(call.id, "Ya estás en la última página")
+            bot.answer_callback_query(call.id, "Ya estas en la ultima página")
         else:
-            datos["pag"] += 1  # Avanzamos una página
+            datos["pag"]+=1  ##avanzamos una página
             pickle.dump(datos, open(f'{DIR["busquedas"]}{cid}_{mid}', 'wb'))
             mostrar_pagina(datos["lista"], cid, datos["pag"], mid)
         return
+    
+############################################################################
 
-# Responde a mensajes que no son comandos
+
+#responde a los mensajes que no son comandos
 @bot.message_handler(content_types=["text"])
 def message(message):
-    # Gestiona los mensajes de texto recibidos
+    #gestiona los mensajes de texto recibidos
+    #Formatos HTML
+    ''' esto es el formato de texto
+    texto_html = '<b>NEGRITA</b>'+'\n'
+    texto_html+= '<i>CURSIVA</i>'+'\n'
+    texto_html+= '<u>SUBRAYADO</u>'+'\n'
+    texto_html+= '<s>TACHADO</s>'+'\n'
+    texto_html+= '<code>MONOSPACIADO</code>'+'\n'
+    texto_html+= '<span class="tg-spoiler">SPOILER</span>'+'\n'
+    texto_html+= '<a href="t.me/YaichiAnimeDirectorio/">ENLACE</a>'+'\n'''
+
+
     if message.text.startswith("/"):
         bot.send_message(message.chat.id, "Comando no disponible")
-    else:
-        x = bot.send_message(message.chat.id, "<b>Holasss</b>", parse_mode="html")
-        time.sleep(3)
-        bot.edit_message_text("<u>Holisss</u>", message.chat.id, x.message_id, parse_mode="html")
+       
+##########################################################################
 
+########################################################################
+
+############################################################################
 # Configuramos los comandos disponibles del bot
 bot.set_my_commands([
     telebot.types.BotCommand("/start", "Inicia el bot"),
@@ -200,31 +233,43 @@ bot.set_my_commands([
     telebot.types.BotCommand("/ayuda", "Inicia también el bot"),
 ])
 def recibir_mensajes():
-    # Bucle infinito que comprueba si hay nuevos mensajes en el bot
+    #bucle infinito que comprueba si hay nuevos mensajes en el bot
     bot.infinity_polling()
 
-
-# Iniciador del bot
+#  MAIN ##################################################################
+#iniciador del bot
 if __name__ == '__main__':
     print('Estado: Iniciando el Bot')
     hilo_bot = threading.Thread(name="hilo_bot", target=recibir_mensajes)
     hilo_bot.start()
     print('Bot iniciado')
 
-    sms = bot.send_message(CANAL_ID, "@YaichiAnimeBot ESTADO: Bot Iniciado!!!")
+    sms = bot.send_message(GRUPO_STAFF, "@YaichiAnimeBot ESTADO: Bot Iniciado!!!")
     sms2 = bot.send_message(MI_CHAT_ID, "@YaichiAnimeBot ESTADO: Bot Iniciado!!!")
     time.sleep(4)
 
     def contador(segundos):
         for i in range(segundos, 0, -1):
             print(f"[Quedan {i} seg]")
-            bot.edit_message_text(f"@YaichiAnimeBot ESTADO: Bot Iniciado!!!\n¡Eliminando!... en {i} segundos", CANAL_ID, sms.message_id, parse_mode="html")
+            bot.edit_message_text(f"@YaichiAnimeBot ESTADO: Bot Iniciado!!!\n¡Eliminando!... en {i} segundos", GRUPO_STAFF, sms.message_id, parse_mode="html")
             bot.edit_message_text(f"@YaichiAnimeBot ESTADO: Bot Iniciado!!!\n¡Eliminando!... en {i} segundos", MI_CHAT_ID, sms2.message_id, parse_mode="html")
             time.sleep(1)
     print("¡Eliminando!")
-    bot.edit_message_text("@YaichiAnimeBot ESTADO: Bot Iniciado!!!\n¡¡Eliminando...!!", CANAL_ID, sms.message_id, parse_mode="html")
+    bot.edit_message_text("@YaichiAnimeBot ESTADO: Bot Iniciado!!!\n¡¡Eliminando...!!", GRUPO_STAFF, sms.message_id, parse_mode="html")
     bot.edit_message_text("@YaichiAnimeBot ESTADO: Bot Iniciado!!!\n¡¡Eliminando...!!", MI_CHAT_ID, sms2.message_id, parse_mode="html")
     time.sleep(3)
     contador(5)
+
     bot.delete_message(MI_CHAT_ID, sms2.message_id)
-    bot.delete_message(CANAL_ID, sms.message_id)
+    bot.delete_message(GRUPO_STAFF, sms.message_id)
+###########################################################################
+    #configuramos los comandos disponibles del bot
+    bot.set_my_commands([
+        telebot.types.BotCommand("/start", "Inicia el bot"),
+        telebot.types.BotCommand("/botones", "Botones del directorio"),
+        telebot.types.BotCommand("/buscar", "busqueda en la web"),
+        telebot.types.BotCommand("/link", "mostrar los links de los canales"),
+        telebot.types.BotCommand("/help", "Inicia otra ves el bot"),
+        telebot.types.BotCommand("/ayuda", "Inicia tambien el bot"),
+    ])
+###############################################################################
